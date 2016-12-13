@@ -1,0 +1,28 @@
+﻿@model IEnumerable<SistemaControleAcesso.Models.Perfil>
+<table class="table table-bordered table-striped">
+
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.nome)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <button type="button" class="btn btn-primary" onclick="Lista_Perfil.selecionar(@Html.DisplayFor(modelItem => item.id))"><i class="glyphicon glyphicon-ok"></i></button>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nome)
+            </td>
+        </tr>
+    }
+</table>

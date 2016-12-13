@@ -1,0 +1,206 @@
+﻿@using SistemaControleAcesso.Models;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="~/Content/AdminLTE.min.css">
+    <link rel="stylesheet" href="~/Content/skin-blue.min.css">
+    <link rel="stylesheet" href="~/Content/style.css">
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/FS")
+</head>
+<body class="skin-blue sidebar-mini">
+    <div class="wrapper">
+        <!-- Main Header -->
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="@Url.Action("Index", "Home")" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><b>@Dominios.nome_sistema.Split(' ')[0]</b></span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>@Dominios.nome_sistema</b></span>
+            </a>
+            <!-- Header Navbar -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Menu</span>
+                </a>
+                <!-- Navbar Right Menu -->
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            @Html.Partial("_LoginPartial")
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <div class="sidebar-form">
+                    <div class="input-group">
+                        <input type="text" id="MnuNomeFiltro" class="form-control" placeholder="Pesquisar...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat" onclick="Menu.pesquisar($('#MnuNomeFiltro').val());"><i class="glyphicon glyphicon-search"></i></button>
+                        </span>
+                    </div>
+                </div>
+                <!-- Sidebar Menu -->
+                <ul id="menu_lateral" class="sidebar-menu">
+                    @*<li class="header">HEADER</li>
+                        <li><a href="@Url.Action(actionName: "Index", controllerName:"Home")"><i class="glyphicon glyphicon-home pull-left"></i><span>Home</span></a></li>
+                        <li><a href="@Url.Action(actionName: "About", controllerName:"Home")"><i class="glyphicon glyphicon-info-sign pull-left"></i><span>About</span></a></li>
+                        <li><a href="@Url.Action(actionName: "Contact", controllerName:"Home")"><i class="glyphicon glyphicon-comment pull-left"></i><span>Contact</span></a></li>*@
+                </ul>
+                <script type="text/javascript">
+                    var Menu = {
+                        funcionalidades: @Html.Raw(Json.Encode(Session[Dominios.funcionalidades_sessao] != null ? Session[Dominios.funcionalidades_sessao] : new List<Funcionalidade>())),
+                        lista: new Array(),
+                        pesquisar: function(nome){
+                            Menu.lista = new Array();
+                            var listaFiltrados = [];
+                            var achou = false;
+                            listaFiltrados = Menu.funcionalidades.filter(
+                                function(funcionalidade){
+                                    return ((funcionalidade.nome.indexOf(nome) >= 0  || nome == "") && (funcionalidade.tipo == @((int)Funcionalidade_tipo.clicavel) || funcionalidade.tipo == @((int)Funcionalidade_tipo.naoClicavel )));
+                                });
+
+                            $.each(listaFiltrados, function(a,fun){
+                                achou = false;
+
+                                $.each(Menu.lista, function(b, itm){
+                                    if (itm.id == fun.id){
+                                        achou = true;
+                                    }
+                                });
+
+                                if (!achou){
+                                    if (fun.id_pai != 0){
+                                        Menu.addPai(fun.id_pai);
+                                    }
+                                    Menu.lista.push(fun);
+                                }
+
+                            });
+
+                            //}else {
+                            //    Menu.lista = Menu.funcionalidades;
+                            //}
+                            $("#menu_lateral").html("");
+
+                            var item_menu = "";
+                            $.each(Menu.lista, function(c,funcionalidade){
+                                if (funcionalidade.qtdFilhos > 0){
+                                    item_menu = '<li class="treeview">'+
+                                                    '<a href="'+ (funcionalidade.link != null ? funcionalidade.link: "#") +'">'+
+                                                        '<i class="glyphicon glyphicon-list pull-left"></i>'+
+                                                        '<span>'+ funcionalidade.nome + '</span>'+
+                                                    '</a>'+
+                                                    '<ul class="treeview-menu" id="menu_' + funcionalidade.id + '"></ul>'+
+                                                 '</li>';
+
+                                }else{
+                                    item_menu = '<li><a href="'+ (funcionalidade.link != null? funcionalidade.link: '#') +'">'+funcionalidade.nome+'</a></li>';
+                                }
+
+                                if (funcionalidade.id_pai != 0){
+                                    $("#menu_" + funcionalidade.id_pai).append(item_menu);
+                                }else {
+                                    $("#menu_lateral").append(item_menu)
+                                }
+
+                            });
+
+                        },
+                        addPai: function(id_pai){
+
+                            var achou = false;
+                            var func = null;
+                            $.each(Menu.funcionalidades, function(d,itm){
+                                if(itm.id == id_pai){
+                                    func = itm;
+                                }
+                            });
+
+
+                            $.each(Menu.lista, function(e,itm){
+                                if (itm.id == func.id){
+                                    itm.qtdFilhos ++;
+                                    achou = true;
+                                }
+                            });
+                            if (!achou){
+                                if (func.id_pai != 0){
+                                    Menu.addPai(func.id_pai);
+                                }
+
+                                Menu.lista.push(func);
+                            }
+                        }
+                    };
+                    $(document).ready(function(){
+                        Menu.pesquisar("");
+
+                    });
+
+                </script>
+                <!-- /.sidebar-menu -->
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    @ViewBag.Title
+                </h1>
+                <ol class="breadcrumb">
+                    @if (ViewBag.caminho != null)
+                    {
+                        foreach (var funcionalidade in ((List<Funcionalidade>)ViewBag.caminho))
+                        {
+                            <li class="@(!String.IsNullOrEmpty(funcionalidade.link) && funcionalidade.link.Split('/')[1] == Request.RawUrl.Split('/')[1]? "active": "")">
+                                @if (!String.IsNullOrEmpty(funcionalidade.link))
+                                {
+                                    <a href="@funcionalidade.link"> @funcionalidade.nome</a>
+                                }
+                                else
+                                {
+                                    @funcionalidade.nome
+                                }
+
+                            </li>
+                        }
+                    }
+                </ol>
+            </section>
+            <!-- Main content -->
+            <section class="content">
+                <div class="box" id="corpo">
+                    @RenderBody()
+                </div>
+            </section><!-- /.content -->
+        </div><!-- /.content-wrapper -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2016 <a href="#">@Dominios.nome_sistema</a>.</strong> All rights reserved.
+        </footer>
+        <div class="control-sidebar-bg"></div>
+    </div><!-- ./wrapper -->
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/app.min.js"></script>
+    @RenderSection("scripts", required: false)
+
+
+</body>
+</html>

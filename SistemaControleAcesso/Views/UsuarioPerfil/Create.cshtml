@@ -1,0 +1,178 @@
+﻿@model SistemaControleAcesso.Models.UsuarioPerfil
+
+@{
+    ViewBag.Title = "Usuário x perfil";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Informações</h3>
+    </div>
+    <div class="box-body">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <div class="form-group col-sm-3">
+
+                @Html.LabelFor(model => model.id, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@Html.DisplayFor(model => model.id)</p>
+            </div>
+
+            <div class="form-group col-sm-3 col-sm-offset-6">
+                @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label" })
+                @Html.EnumDropDownListFor(model => model.status, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">@Html.DisplayNameFor(model => model.usuario_id)</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.usuario_id, htmlAttributes: new { @class = "control-label" })
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.usuario_id, new { htmlAttributes = new { @class = "form-control" } })
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="Lista_Usuario.abrir()"><i class="glyphicon glyphicon-search"></i></button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.usuario_id, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.usuario.nome, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static" id="@Html.IdFor(model => model.usuario.nome)">@Html.DisplayFor(model => model.usuario.nome)</p>
+                    </div>
+                </div>
+                @Html.Partial("~/Views/Usuario/_Selecionar.cshtml")
+
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">@Html.DisplayNameFor(model => model.perfil_id)</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.perfil_id, htmlAttributes: new { @class = "control-label" })
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.perfil_id, new { htmlAttributes = new { @class = "form-control" } })
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="Lista_Perfil.abrir()"><i class="glyphicon glyphicon-search"></i></button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.perfil_id, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.perfil.nome, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static" id="@Html.IdFor(model => model.perfil.nome)">@Html.DisplayFor(model => model.perfil.nome)</p>
+                    </div>
+                </div>
+                @Html.Partial("~/Views/Perfil/_Selecionar.cshtml")
+                <script>
+
+                </script>
+            </div>
+        </div>
+    </div>
+    <div class="box-footer">
+        <div class="box-tools pull-right">
+            <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-ok-circle"></i> Salvar</button>
+            <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        var @Html.IdFor(model => model.usuario_id) = "@Html.IdFor(model => model.usuario_id)";
+        var @Html.IdFor(model => model.usuario.nome) = "@Html.IdFor(model => model.usuario.nome)";
+
+        var UsuarioPerfil_usuario = {
+            isvalid: function () {
+
+                $("#" + @Html.IdFor(model => model.usuario.nome)).html('');
+
+                var id = $('#' + @Html.IdFor(model => model.usuario_id)).val();
+                if (id != '' && id != '0'){
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action(actionName: "Find", controllerName: "Usuario")',
+                        data: { "id": id },
+                        success: function (data) {
+                            $("#" + @Html.IdFor(model => model.usuario.nome)).html(data.nome);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                        }
+
+                    });
+                }
+            },
+            msgCampo: function (id_campo, mensagem) {
+                var span = document.createElement('span');
+                $(span).attr('for', id_campo);
+                $(span).html(mensagem);
+                $("span[data-valmsg-for='" + id_campo + "']").append(span);
+            }
+        };
+
+
+        var @Html.IdFor(model => model.perfil_id) = "@Html.IdFor(model => model.perfil_id)";
+        var @Html.IdFor(model => model.perfil.nome) = "@Html.IdFor(model => model.perfil.nome)";
+
+        var UsuarioPerfil_perfil = {
+            isvalid: function () {
+
+                $("#" + @Html.IdFor(model => model.perfil.nome)).html('');
+
+                var id = $('#' + @Html.IdFor(model => model.perfil_id)).val();
+                if (id != '' && id != '0'){
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action(actionName: "Find", controllerName: "Perfil")',
+                        data: { "id": id },
+                        success: function (data) {
+                            $("#" + @Html.IdFor(model => model.perfil.nome)).html(data.nome);
+
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                        }
+
+                    });
+                }
+            },
+            msgCampo: function (id_campo, mensagem) {
+                var span = document.createElement('span');
+                $(span).attr('for', id_campo);
+                $(span).html(mensagem);
+                $("span[data-valmsg-for='" + id_campo + "']").append(span);
+            }
+        };
+
+
+        fs.preparaListener([
+            {
+                blur: ["#" + "@Html.IdFor(model => model.perfil_id)"],
+                funcao: function(){
+                    UsuarioPerfil_perfil.isvalid();
+
+                }
+            },
+            {
+                blur: ["#" + "@Html.IdFor(model => model.usuario_id)"],
+                funcao: function(){
+                    UsuarioPerfil_usuario.isvalid();
+
+                }
+            }
+        ]);
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

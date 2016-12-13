@@ -1,0 +1,42 @@
+﻿@model SistemaControleAcesso.Models.Estado
+
+@{
+    ViewBag.Title = "Estado";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="box-header with-border">
+            <h3 class="box-title">Informações</h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="form-group col-sm-3">
+                    @Html.HiddenFor(model => model.uf)
+                    @Html.LabelFor(model => model.uf, htmlAttributes: new { @class = "control-label" })
+                    <p class="form-control-static">@Html.DisplayFor(model => model.uf)</p>
+                </div>
+                <div class="form-group col-sm-9">
+                    @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.nome, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.nome, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+        </div>
+    
+    <div class="box-footer">
+        <div class="box-tools pull-right">
+            <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-ok-circle"></i> Salvar</button>
+            <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

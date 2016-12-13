@@ -1,0 +1,31 @@
+﻿@model SistemaControleAcesso.Models.Estado
+
+@{
+    ViewBag.Title = "Estado";
+}
+
+<div class="box-header with-border">
+    <h3 class="box-title">Informações</h3>
+</div>
+<div class="box-body">
+    <div class="row">
+        <div class="form-group col-sm-3">
+            @Html.LabelFor(model => model.uf, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.uf)</p>
+        </div>
+        <div class="form-group col-sm-9">
+            @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.nome)</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="box-footer">
+    <div class="box-tools pull-right">
+        <a href="@Url.Action(actionName: "Edit", routeValues:new { id = Model.uf } )" class="btn btn-primary @(!ViewBag.atualizar? "disabled" : "")"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+        <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+    </div>
+</div>
+
+

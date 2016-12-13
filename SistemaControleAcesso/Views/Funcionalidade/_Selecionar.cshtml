@@ -1,0 +1,62 @@
+﻿
+<div class="modal fade" tabindex="-1" role="dialog" id="lista_Funcionalidade">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Funcionalidades</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Pesquisar</div>
+                    <div class="panel-body">
+						<div class="row">
+							<div class="form-group col-sm-12">
+                                <label for="lis_Funcionalidade_nome" class="control-label">Nome</label>
+                                <input type="text" name="lis_Funcionalidade_nome" id="lis_Funcionalidade_nome" class="form-control"/>
+                            </div>
+						</div>
+						
+                        <div class="row">
+                            <div class="form-group col-sm-4">
+                                <label class="control-label">&nbsp;</label>
+                                <button type="button" name="pesquisar" id="pesquisar" class="btn btn-default form-control" onclick="Lista_Funcionalidade.pesquisar()">Pesquisar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                <div id="divTableFuncionalidade">
+				<!-- Criar uma partial view tipada com o fonte abaixo, para que no pesquisar ele faca o load -->
+
+				</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-ok-circle"></i> Fechar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+    var Lista_Funcionalidade = {
+        abrir: function () {
+            $('#lista_Funcionalidade').modal("show");
+        },
+			
+        selecionar(id) {
+			this.fechar();
+            $('#funcionalidade_id').val(id);
+            $('#funcionalidade_id').focus();
+        },
+        fechar: function () {
+            $('#lista_Funcionalidade').modal("hide");
+        },
+        pesquisar: function () {
+			var Funcionalidade_nome = $('#lis_Funcionalidade_nome').val()			
+			$('#divTableFuncionalidade').load("@Url.Action(actionName: "Index", controllerName: "Funcionalidade")?Funcionalidade_nome=" + Funcionalidade_nome);
+
+        }
+
+    };
+</script>
+

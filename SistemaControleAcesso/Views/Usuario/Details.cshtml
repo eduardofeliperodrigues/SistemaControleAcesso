@@ -1,0 +1,131 @@
+﻿@model SistemaControleAcesso.Models.Usuario
+
+@{
+    ViewBag.Title = "Usuário";
+}
+    <div class="box-header with-border">
+        <h3 class="box-title">Informações</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.id, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@Html.DisplayFor(model => model.id)</p>
+            </div>
+
+            <div class="form-group col-sm-4">
+                @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@Html.DisplayFor(model => model.nome)</p>
+            </div>
+
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.cpf, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@Html.DisplayFor(model => model.cpf)</p>
+            </div>
+
+            <div class="form-group col-sm-2">
+                @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.status)</p>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Endereço</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-8">
+                        @Html.LabelFor(model => model.endereco.logradouro, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.endereco.logradouro)</p>
+                    </div>
+
+                    <div class="form-group col-sm-4">
+                        @Html.LabelFor(model => model.endereco.numero, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.endereco.numero)</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        @Html.LabelFor(model => model.endereco.complemento, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.endereco.complemento)</p>
+                    </div>
+
+                    <div class="form-group col-sm-4">
+                        @Html.LabelFor(model => model.endereco.bairro, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.endereco.bairro)</p>
+                    </div>
+
+                    <div class="form-group col-sm-4">
+                        @Html.LabelFor(model => model.endereco.cep, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.endereco.cep)</p>
+                    </div>
+                </div>
+                <div class="box">
+
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Cidade</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group form-group-sm col-sm-4">
+                                @Html.LabelFor(model => model.cidade_id, htmlAttributes: new { @class = "control-label" })
+                                <p class="form-control-static">@Html.DisplayFor(model => model.cidade_id)</p>
+                            </div>
+                            <div class="form-group form-group-sm col-sm-5">
+                                @Html.LabelFor(model => model.cidade.nome, htmlAttributes: new { @class = "control-label" })
+                                <p class="form-control-static" id="@Html.IdFor(model =>model.cidade.nome)">@Html.DisplayFor(model => model.cidade.nome)</p>
+                            </div>
+                            <div class="form-group form-group-sm col-sm-3">
+                                @Html.LabelFor(model => model.cidade.estado_uf, htmlAttributes: new { @class = "control-label" })
+                                <p class="form-control-static" id="@Html.IdFor(model =>model.cidade.estado_uf)">@Html.DisplayFor(model => model.cidade.estado_uf)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Contato</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.telefone, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.telefone)</p>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.celular, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.celular)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Identificação</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.email, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.email)</p>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.senha, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.senha)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-offset-9 col-sm-3">
+                <a href="@Url.Action(actionName: "Edit",routeValues: new { id = Model.id })" class="btn btn-primary @(!ViewBag.atualizar? "disabled" : "")"><i class="glyphicon glyphicon-file"></i> Editar</a>
+                <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+            </div>
+        </div>
+
+    </div>
+</div>

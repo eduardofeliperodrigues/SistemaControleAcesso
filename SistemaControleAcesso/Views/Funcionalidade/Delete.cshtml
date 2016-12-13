@@ -1,0 +1,75 @@
+﻿@model SistemaControleAcesso.Models.Funcionalidade
+
+@{
+    ViewBag.Title = "Funcionalidade";
+}
+
+<div class="alert alert-danger" role="alert">Deseja deletar registro?</div>
+<div class="box-header with-border">
+    <h3 class="box-title">Informações</h3>
+</div>
+<div class="box-body">
+    <div class="row">
+        <div class="form-group col-sm-3">
+            @Html.LabelFor(model => model.id, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.id)</p>
+        </div>
+        <div class="form-group col-sm-5">
+            @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.nome)</p>
+        </div>
+        <div class="form-group col-sm-4">
+            @Html.LabelFor(model => model.tipo, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.tipo)</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-sm-12">
+            @Html.LabelFor(model => model.link, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.link)</p>
+        </div>
+    </div>
+
+    <div class="box">
+
+        <div class="box-header with-border">
+            <h3 class="box-title">Funcionalidade pai</h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="form-group col-sm-4">
+                    @Html.LabelFor(model => model.id_pai, htmlAttributes: new { @class = "control-label" })
+                    <p class="form-control-static">@Html.DisplayFor(model => model.id_pai)</p>
+                </div>
+                <div class="form-group col-sm-8">
+                    <label class="control-label">Nome</label>
+                    <p class="form-control-static" id="@Html.IdFor(model =>model.nome)_pai">@ViewBag.nome_pai</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="form-group col-sm-3 col-sm-offset-9">
+            @Html.LabelFor(model => model.nivel, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static" id="dsp_@Html.IdFor(model =>model.nivel)">@Html.DisplayFor(model => model.nivel)</p>
+            @Html.ValidationMessageFor(model => model.nivel, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+</div>
+<div class="box-footer">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="box-tools pull-right">
+            <button type="submit" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Deletar</button>
+            <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+        </div>
+
+    }
+</div>

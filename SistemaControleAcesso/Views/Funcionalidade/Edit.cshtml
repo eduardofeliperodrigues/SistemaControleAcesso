@@ -1,0 +1,141 @@
+﻿@model SistemaControleAcesso.Models.Funcionalidade
+
+@{
+    ViewBag.Title = "Funcionalidade";
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Informações</h3>
+    </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="form-group col-sm-3">
+                    @Html.LabelFor(model => model.id, htmlAttributes: new { @class = "control-label" })
+                    <p class="form-control-static">@Html.DisplayFor(model => model.id)</p>
+                </div>
+                <div class="form-group col-sm-5">
+                    @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.nome, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.nome, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group col-sm-4">
+                    @Html.LabelFor(model => model.tipo, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.tipo, SistemaControleAcesso.Models.Dominios.Funcionalidade_tipo, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.tipo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    @Html.LabelFor(model => model.link, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.link, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.link, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="box">
+
+                <div class="box-header with-border">
+                    <h3 class="box-title">Funcionalidade pai</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="form-group col-sm-4">
+                            @Html.LabelFor(model => model.id_pai, htmlAttributes: new { @class = "control-label" })
+                            <div class="input-group">
+                                @Html.EditorFor(model => model.id_pai, new { htmlAttributes = new { @class = "form-control", id = "funcionalidade_id" } })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" onclick="Lista_Funcionalidade.abrir()"><i class="glyphicon glyphicon-search"></i></button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.id_pai, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-sm-8">
+                            <label class="control-label">Nome</label>
+                            <p class="form-control-static" id="@Html.IdFor(model =>model.nome)_pai">@ViewBag.nome_pai</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-3 col-sm-offset-9">
+                    @Html.LabelFor(model => model.nivel, htmlAttributes: new { @class = "control-label" })
+                    <p class="form-control-static" id="dsp_@Html.IdFor(model =>model.nivel)">@Html.DisplayFor(model => model.nivel)</p>
+                    @Html.HiddenFor(model => model.nivel)
+                    @Html.HiddenFor(model => model.classificacao)
+                    @Html.ValidationMessageFor(model => model.nivel, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @Html.Partial("~/Views/Funcionalidade/_Selecionar.cshtml")
+
+
+
+        </div>
+        <div class="box-footer">
+
+            <div class="box-tools pull-right">
+                <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-ok-circle"></i> Salvar</button>
+                <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+            </div>
+
+        </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        var @Html.IdFor(model => model.id_pai) = "funcionalidade_id";
+        var @Html.IdFor(model => model.nome) = "@Html.IdFor(model =>model.nome)_pai";
+        var @Html.IdFor(model => model.nivel) = "@Html.IdFor(model => model.nivel)";
+
+        var Funcionalidade_pai = {
+            isvalid: function () {
+                $("#" + @Html.IdFor(model => model.nome)).html('');
+                $("#" + @Html.IdFor(model => model.nivel)).val(0);
+                $("#dsp_" + @Html.IdFor(model => model.nivel)).html($("#" + @Html.IdFor(model => model.nivel)).val());
+
+                var id = $('#' + @Html.IdFor(model => model.id_pai) ).val();
+                if (id != '' && id != '0') {
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action(actionName: "Find", controllerName: "Funcionalidade")',
+                        data: { "id": id },
+                        success: function (data) {
+                            if (data){
+                                $("#" + @Html.IdFor(model => model.nome)).html(data.nome);
+                                if ($("#" + @Html.IdFor(model => model.nivel)).val() == '' || $("#" + @Html.IdFor(model => model.nivel)).val() == 0) {
+                                    $("#" + @Html.IdFor(model => model.nivel)).val(data.nivel + 1);
+                                    $("#dsp_" + @Html.IdFor(model => model.nivel)).html($("#" + @Html.IdFor(model => model.nivel)).val());
+
+                                }
+                            }
+
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                        }
+
+                    });
+                } else {
+                    $('#' + @Html.IdFor(model => model.id_pai)).val(0);
+                }
+            }
+        };
+        fs.preparaListener([
+            {
+                blur: ["#" + @Html.IdFor(model => model.id_pai)],
+                funcao: function(){
+                    Funcionalidade_pai.isvalid();
+                }
+            }
+        ]);
+    </script>
+}

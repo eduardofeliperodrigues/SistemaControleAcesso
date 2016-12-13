@@ -1,0 +1,94 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ output extension=".cshtml" #>
+<#@ include file="Imports.include.t4" #>
+@model <#= ViewDataTypeName #>
+<#
+// The following chained if-statement outputs the file header code and markup for a partial view, a view using a layout page, or a regular view.
+if(IsPartialView) {
+#>
+
+<#
+} else if(IsLayoutPageSelected) {
+#>
+
+@{
+    ViewBag.Title = "<#= ViewDataTypeShortName #>";
+<#
+if (!String.IsNullOrEmpty(LayoutPageFile)) {
+#>
+    Layout = "<#= LayoutPageFile#>";
+<#
+}
+#>
+}
+<#
+} else {
+#>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title><#= ViewName #></title>
+</head>
+<body>
+<#
+    PushIndent("    ");
+}
+#>
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        <h3 class="panel-title">Informações</h3>
+    </div>
+    <div class="panel-body">
+<div class="alert alert-danger" role="alert">Deseja deletar registro?</div>
+<#
+foreach (PropertyMetadata property in ModelMetadata.Properties) {
+    if (property.Scaffold && !property.IsForeignKey) {
+#>
+<#
+        // We do not want to show any association properties for which there is
+        // no associated foreign key.
+        if (property.IsAssociation && GetRelatedModelMetadata(property) == null) {
+            continue;
+        }
+#>
+<div class="row">
+    <div class="form-group col-sm-12">
+	@Html.LabelFor(model => model.<#= GetValueExpression(property) #>, htmlAttributes: new { @class = "control-label" })            
+    <p class="form-control-static">@Html.DisplayFor(model => model.<#= GetValueExpression(property) #>)</p>
+	</div>
+</div>
+
+<#
+    }
+}
+#>
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="form-group col-sm-offset-9 col-sm-3">                
+        <button type="submit" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Deletar</button>
+        <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+    </div>
+</div>
+    }
+	</div>
+</div>
+<#
+if(!IsPartialView && !IsLayoutPageSelected) {
+    ClearIndent();
+#>
+</body>
+</html>
+<#
+}
+#>
+<#@ include file="ModelMetadataFunctions.cs.include.t4" #>

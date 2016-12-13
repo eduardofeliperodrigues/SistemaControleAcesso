@@ -1,0 +1,32 @@
+﻿@model SistemaControleAcesso.Models.Cidade
+
+@{
+    ViewBag.Title = "Cidade";
+}
+
+<div class="box-header with-border">
+    <h3 class="box-title">Informações</h3>
+</div>
+<div class="box-body">
+    <div class="row">
+        <div class="form-group col-sm-3">
+            @Html.LabelFor(model => model.id, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.id)</p>
+        </div>
+        <div class="form-group col-sm-5">
+            @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.nome)</p>
+        </div>
+        <div class="form-group col-sm-4">
+            @Html.LabelFor(model => model.estado_uf, htmlAttributes: new { @class = "control-label" })
+            <p class="form-control-static">@Html.DisplayFor(model => model.estado_uf)</p>
+        </div>
+    </div>
+</div>
+<div class="box-footer">
+    <div class="box-tools pull-right">
+        <a href="@Url.Action(actionName: "Edit",routeValues: new { id = Model.id })" class="btn btn-primary @(!ViewBag.atualizar? "disabled" : "")"><i class="glyphicon glyphicon-file"></i> Editar</a>
+        <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+    </div>
+</div>
+

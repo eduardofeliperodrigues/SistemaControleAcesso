@@ -1,0 +1,38 @@
+﻿@model IEnumerable<SistemaControleAcesso.Models.Funcionalidade>
+
+<table class="table table-bordered">
+
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.tipo)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        var ativo = !item.isClicavel() ? "active" : "";
+        
+        <tr class="@ativo">
+            <td>
+                <button type="button" class="btn btn-primary" onclick="Lista_Funcionalidade.selecionar(@Html.DisplayFor(modelItem => item.id))"><i class="glyphicon glyphicon-ok"></i></button>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td style="padding-left:@(item.nivel*10)px">
+                @Html.DisplayFor(modelItem => item.nome)
+            </td>
+            <td>
+                @SistemaControleAcesso.Models.Util.displayNameEnum(item.tipo)
+            </td>
+        </tr>
+    }
+</table>
+<!-- Criar uma partial view tipada com o fonte acima, para que no pesquisar ele faca o load -->

@@ -1,0 +1,59 @@
+﻿<div class="modal fade" tabindex="-1" role="dialog" id="lista_Perfil">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Perfis de usuário</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Pesquisar</div>
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="lis_Perfil_nome" class="control-label">Nome</label>
+                                <input type="text" name="lis_Perfil_nome" id="lis_Perfil_nome" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-4">
+                                <label class="control-label">&nbsp;</label>
+                                <button type="button" name="pesquisar" id="pesquisar" class="btn btn-default form-control" onclick="Lista_Perfil.pesquisar()">Pesquisar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="divTablePerfil">
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-ok-circle"></i> Fechar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+    var Lista_Perfil = {
+        abrir: function () {
+            $('#lista_Perfil').modal("show");
+        },
+
+        selecionar(id) {
+            this.fechar();
+            $('#perfil_id').val(id);
+            $('#perfil_id').focus();
+        },
+        fechar: function () {
+            $('#lista_Perfil').modal("hide");
+        },
+        pesquisar: function () {
+            var Perfil_nome = $('#lis_Perfil_nome').val()
+            $('#divTablePerfil').load("@Url.Action(actionName: "Index", controllerName: "Perfil")?nome=" + Perfil_nome);
+
+        }
+
+    };
+</script>

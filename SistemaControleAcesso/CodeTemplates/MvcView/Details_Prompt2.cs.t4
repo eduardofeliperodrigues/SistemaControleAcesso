@@ -1,0 +1,165 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ output extension=".cshtml" #>
+<#@ include file="Imports.include.t4" #>
+@model <#= ViewDataTypeName #>
+<#
+Version requiredMvcVersion = new Version("5.1.0.0");
+bool isControlHtmlAttributesSupported = MvcVersion >= requiredMvcVersion;
+var relatedProperties = ModelMetadata.RelatedEntities.ToDictionary(item => item.AssociationPropertyName);
+bool achou = false;
+string fkname = string.Empty;
+string fkobjeto	 = string.Empty;
+string fkdescricao = string.Empty;
+string fktype = string.Empty;
+// The following chained if-statement outputs the file header code and markup for a partial view, a view using a layout page, or a regular view.
+if(IsPartialView) {
+#>
+
+<#
+} else if(IsLayoutPageSelected) {
+#>
+
+@{
+    ViewBag.Title = "<#= ViewDataTypeShortName #>";
+<#
+if (!String.IsNullOrEmpty(LayoutPageFile)) {
+#>
+    Layout = "<#= LayoutPageFile#>";
+<#
+}
+#>
+}
+
+<#
+} else {
+#>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title><#= ViewDataTypeShortName #></title>
+</head>
+<body>
+<#
+    PushIndent("    ");
+}
+#>
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        <h3 class="panel-title">Informações</h3>
+    </div>
+    <div class="panel-body">
+<#
+foreach (PropertyMetadata property in ModelMetadata.Properties) {
+    if (property.Scaffold && !property.IsAssociation) {
+#>
+<#
+        // We do not want to show any association properties for which there is
+        // no associated foreign key.
+        //if ( && GetRelatedModelMetadata(property) == null) {
+            //continue;
+        //}
+
+		if (property.IsForeignKey){
+            fkname      = String.Empty;
+			fkobjeto	= String.Empty;
+			fkdescricao = String.Empty;
+			fktype		= String.Empty;
+
+			achou = false;
+			foreach (var prop in relatedProperties.Values)
+            {
+																
+				foreach(var fk in prop.ForeignKeyPropertyNames){
+					if (fk == GetAssociationName(property)){
+                        fkname      = prop.ForeignKeyPropertyNames[0];
+						fkobjeto    = prop.EntitySetName; 
+						fkdescricao = prop.DisplayPropertyName ;
+						fktype = (!string.IsNullOrEmpty(prop.TypeName)? prop.TypeName.Split('.')[(prop.TypeName.Split('.').Length == 0? prop.TypeName.Split('.').Length: prop.TypeName.Split('.').Length -1)] :"");
+						achou = true;
+
+						break;
+					}
+					
+				}
+				if (achou ) {
+					break;
+				}
+
+			}
+#>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">@Html.LabelFor(model => model.<#= property.PropertyName #><#= (isControlHtmlAttributesSupported)? ", htmlAttributes: new { @class = \"control-label\" }": "" #>)</h3>
+	</div>
+	<div class="panel-body">
+<#		
+		}
+#>
+<div class="row">
+    <div class="form-group col-sm-<#=property.IsForeignKey? "6": "12"#>">
+	@Html.LabelFor(model => model.<#= GetValueExpression(property) #>, <#= (isControlHtmlAttributesSupported)? "htmlAttributes: new { @class = \"control-label\" }": "" #>) 
+    <p class="form-control-static">
+<#
+            if (property.IsEnum && !property.IsEnumFlags){
+#>
+        @SistemaControleAcesso.Models.Util.displayNameEnum(Model.<#= GetValueExpression(property) #>)
+<#
+            }else{
+#>
+        @Html.DisplayFor(model => model.<#= GetValueExpression(property) #>)
+<#
+            }
+ #>
+    </p>
+</div>
+<#
+if (property.IsForeignKey){
+#>
+			<div class="form-group col-sm-6">
+				@Html.LabelFor(model => model.<#= fkobjeto + "." + fkdescricao #>, <#= (isControlHtmlAttributesSupported)? "htmlAttributes: new { @class = \"control-label\" }":""#>)
+				<p class="form-control-static" id="@Html.IdFor(model => model.<#= fkobjeto + "." + fkdescricao #>)">@Html.DisplayFor(model => model.<#= fkobjeto + "." + fkdescricao #>)</p>
+			</div>
+		</div>
+	</div>
+</div>
+<#
+		} else {
+#>
+</div>
+<#
+		}
+    }
+}
+#>
+<div class="row">
+    <div class="form-group col-sm-offset-9 col-sm-3">       
+<#    
+string pkName = GetPrimaryKeyName();
+#>
+	<a href="@Url.Action(actionName: "Edit",routeValues: new { id = Model.<#= pkName != null? pkName : "/* id = Model.PrimaryKey */" #> })" class="btn btn-primary @(!ViewBag.atualizar? "disabled" : "")"><i class="glyphicon glyphicon-file"></i> Editar</a>
+    <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>    
+	</div>
+</div>
+</div>
+</div>
+<#
+// The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
+#>
+<#
+if(!IsPartialView && !IsLayoutPageSelected) {
+    ClearIndent();
+#>
+</body>
+</html>
+<#
+}
+#>
+<#@ include file="ModelMetadataFunctions.cs.include.t4" #>

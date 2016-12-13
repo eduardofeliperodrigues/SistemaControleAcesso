@@ -1,0 +1,127 @@
+﻿@model SistemaControleAcesso.Models.Permissao
+
+@{
+    ViewBag.Title = "Permissão de acesso";
+}
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Informações</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="form-group col-sm-12">
+                @Html.LabelFor(model => model.id, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@Html.DisplayFor(model => model.id)</p>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Funcionalidade</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.funcionalidade_id, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.funcionalidade_id)</p>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.funcionalidade.nome, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static" id="@Html.IdFor(model => model.funcionalidade.nome)">@Html.DisplayFor(model => model.funcionalidade.nome)</p>
+                    </div>
+                    <p id="@Html.IdFor(model => model.funcionalidade.tipo)" style="display:none">@((int)Model.funcionalidade.tipo)</p>
+                </div>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Perfil</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.perfil_id, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.perfil_id)</p>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.perfil.nome, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static" id="@Html.IdFor(model => model.perfil.nome)">@Html.DisplayFor(model => model.perfil.nome)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Usuário</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.usuario_id, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static">@Html.DisplayFor(model => model.usuario_id)</p>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        @Html.LabelFor(model => model.usuario.nome, htmlAttributes: new { @class = "control-label" })
+                        <p class="form-control-static" id="@Html.IdFor(model => model.usuario.nome)">@Html.DisplayFor(model => model.usuario.nome)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="grp_permissoes_normais">
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.consultar, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.consultar)</p>
+            </div>
+
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.inserir, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.inserir)</p>
+            </div>
+
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.alterar, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.alterar)</p>
+            </div>
+
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.excluir, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.excluir)</p>
+            </div>
+        </div>
+        <div class="row" id="grp_permissoes_especiais">
+            <div class="form-group col-sm-3">
+                @Html.LabelFor(model => model.especial, htmlAttributes: new { @class = "control-label" })
+                <p class="form-control-static">@SistemaControleAcesso.Models.Util.displayNameEnum(Model.especial)</p>
+            </div>
+        </div>
+        
+    </div>
+    <div class="box-footer">
+        <div class="box-tools pull-right">
+            <a href="@Url.Action(actionName: "Edit",routeValues: new { id = Model.id })" class="btn btn-primary @(!ViewBag.atualizar? "disabled" : "")"><i class="glyphicon glyphicon-file"></i> Editar</a>
+            <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+        </div>
+    </div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        fs.preparaListener([
+            {
+                on: ["ready"],
+                funcao: function () {
+                    if ($("#" + "@Html.IdFor(model => model.funcionalidade.tipo)").html() == "@((int)SistemaControleAcesso.Models.Funcionalidade_tipo.clicavel)" ||
+                        $("#" + "@Html.IdFor(model => model.funcionalidade.tipo)").html() == "@((int)SistemaControleAcesso.Models.Funcionalidade_tipo.naoClicavel)"
+                        ) {
+                        $("#grp_permissoes_normais").show();
+                        $("#grp_permissoes_especiais").hide();
+                    } else {
+                        $("#grp_permissoes_normais").hide();
+                        $("#grp_permissoes_especiais").show();
+                    }
+                }
+            }
+
+        ]);
+
+    </script>
+}

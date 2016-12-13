@@ -1,0 +1,301 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ output extension=".cshtml" #>
+<#@ include file="Imports.include.t4" #>
+@model <#= ViewDataTypeName #>
+<#
+// "form-control" attribute is only supported for all EditorFor() in System.Web.Mvc 5.1.0.0 or later versions, except for checkbox, which uses a div in Bootstrap
+string boolType = "System.Boolean";
+Version requiredMvcVersion = new Version("5.1.0.0");
+bool isControlHtmlAttributesSupported = MvcVersion >= requiredMvcVersion;
+var relatedProperties = ModelMetadata.RelatedEntities.ToDictionary(item => item.AssociationPropertyName);
+bool achou = false;
+string fkname = string.Empty;
+string fkobjeto	 = string.Empty;
+string fkdescricao = string.Empty;
+string fktype = string.Empty;
+// The following chained if-statement outputs the file header code and markup for a partial view, a view using a layout page, or a regular view.
+if(IsPartialView) {
+#>
+
+<#
+} else if(IsLayoutPageSelected) {
+#>
+
+@{
+    ViewBag.Title = "<#= ViewDataTypeShortName #>";
+<#
+    if (!String.IsNullOrEmpty(LayoutPageFile)) {
+#>
+    Layout = "<#= LayoutPageFile#>";
+<#
+    }
+#>
+}
+
+<#
+} else {
+#>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title><#= ViewDataTypeShortName #></title>
+</head>
+<body>
+<#
+    PushIndent("    ");
+}
+#>
+<#
+if (ReferenceScriptLibraries) {
+#>
+<#
+    if (!IsLayoutPageSelected && IsBundleConfigPresent) {
+#>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<#
+    }else if (!IsLayoutPageSelected) {
+#>
+<script src="~/Scripts/jquery-<#= JQueryVersion #>.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<#
+    }
+}
+#>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        <h3 class="panel-title">Informações</h3>
+    </div>
+    <div class="panel-body">	
+        @Html.ValidationSummary(true<#= isControlHtmlAttributesSupported? ", \"\", new { @class = \"text-danger\" }": ""  #>)
+<#
+
+foreach (PropertyMetadata property in ModelMetadata.Properties) {
+    if (property.Scaffold && !property.IsAssociation) {
+        if (property.IsForeignKey){
+            fkname      = String.Empty;
+			fkobjeto	= String.Empty;
+			fkdescricao = String.Empty;
+			fktype		= String.Empty;
+
+			achou = false;
+			foreach (var prop in relatedProperties.Values)
+            {
+																
+				foreach(var fk in prop.ForeignKeyPropertyNames){
+					if (fk == GetAssociationName(property)){
+                        fkname      = prop.ForeignKeyPropertyNames[0];
+						fkobjeto    = prop.EntitySetName; 
+						fkdescricao = prop.DisplayPropertyName ;
+						fktype = (!string.IsNullOrEmpty(prop.TypeName)? prop.TypeName.Split('.')[(prop.TypeName.Split('.').Length == 0? prop.TypeName.Split('.').Length: prop.TypeName.Split('.').Length -1)] :"");
+						achou = true;
+
+						break;
+					}
+					
+				}
+				if (achou ) {
+					break;
+				}
+
+			}
+#>
+            <div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">@Html.LabelFor(model => model.<#= property.PropertyName #><#= (isControlHtmlAttributesSupported)? ", htmlAttributes: new { @class = \"control-label\" }": "" #>)</h3>
+			</div>
+			<div class="panel-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+<#
+        } else{
+#>
+                <div class="row">
+                    <div class="form-group col-sm-12">
+<#
+        }
+#>
+                        @Html.LabelFor(model => model.<#= property.PropertyName #><#= (isControlHtmlAttributesSupported)? ", htmlAttributes: new { @class = \"control-label\" }": "" #>)
+<#
+        bool isCheckbox = property.TypeName.Equals(boolType);
+        if (property.IsForeignKey){
+#>
+                        <div class="input-group">
+<#
+        }
+        if (isCheckbox && isControlHtmlAttributesSupported) {
+#>
+                        <div class="checkbox">
+<#
+            PushIndent("    ");
+        }
+        if (property.IsPrimaryKey) {
+#>
+			            @Html.HiddenFor(model => model.<#= property.PropertyName #>)
+<#
+        }
+
+        if (property.IsReadOnly || property.IsPrimaryKey) {
+#>
+			            <p class="form-control-static">@Html.DisplayFor(model => model.<#=property.PropertyName #>)</p>
+<#
+        } else if (property.IsEnum && !property.IsEnumFlags) {
+#>
+                        @Html.EnumDropDownListFor(model => model.<#= property.PropertyName #> <#= (isControlHtmlAttributesSupported)? ", new { @class = \"form-control\" }": "" #>)
+<#
+        } else if (!isCheckbox) {
+#>
+                        @Html.EditorFor(model => model.<#= property.PropertyName #><#= (isControlHtmlAttributesSupported)? ", new { htmlAttributes = new { @class = \"form-control\" }}": "" #>)
+<#
+        }else {
+#>
+                        @Html.EditorFor(model => model.<#= property.PropertyName #>)
+<#        
+        }
+		if (isCheckbox && isControlHtmlAttributesSupported) {
+                PopIndent();
+#>
+                        </div>
+<#
+        }
+        if (property.IsForeignKey){
+#>
+				            <span class="input-group-btn">
+					            <button type="button" class="btn btn-default" onclick="Lista_<#= fktype #>.abrir()"><i class="glyphicon glyphicon-search"></i></button>
+				            </span>
+			            </div>
+<# 			
+		}
+#>
+                        @Html.ValidationMessageFor(model => model.<#= property.PropertyName #><#= (isControlHtmlAttributesSupported)? ", \"\", new { @class = \"text-danger\" }": "" #>)
+
+                    </div>
+<#
+		if (property.IsForeignKey){
+#>
+			        <div class="form-group col-sm-6">
+				        @Html.LabelFor(model => model.<#= fkobjeto + "." + fkdescricao #>, htmlAttributes: new { @class = "control-label" })
+				        <p class="form-control-static" id="@Html.IdFor(model => model.<#= fkobjeto + "." + fkdescricao #>)">@Html.DisplayFor(model => model.<#= fkobjeto + "." + fkdescricao #>)</p>
+			        </div>			
+<#			
+		}
+#>
+                </div>
+
+<#	
+        if (property.IsForeignKey){
+#>
+		        @Html.Partial("~/Views/<#= fktype #>/_Selecionar.cshtml")
+            </div>
+	    </div>
+<#
+        }
+    }
+}
+#>
+	    <div class="row">
+            <div class="form-group col-sm-offset-9 col-sm-3">                
+                <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-ok-circle"></i> Salvar</button>
+                <a href="@Url.Action(actionName: "Index")" class="btn btn-default"><i class="glyphicon glyphicon-remove-circle"></i> Fechar</a>
+            </div>
+        </div>
+	</div>
+</div>
+}
+
+<#
+if(IsLayoutPageSelected && ReferenceScriptLibraries && IsBundleConfigPresent) {
+#>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+		<# 
+		string blur_foreign_keys = "";
+		foreach (var prop in relatedProperties.Values) {
+            fkname      = prop.ForeignKeyPropertyNames[0];
+            fkobjeto    = prop.EntitySetName; 
+			fkdescricao = prop.DisplayPropertyName ;
+            fktype = (!string.IsNullOrEmpty(prop.TypeName)? prop.TypeName.Split('.')[(prop.TypeName.Split('.').Length == 0? prop.TypeName.Split('.').Length: prop.TypeName.Split('.').Length -1)] :"");
+		#>
+
+			var @Html.IdFor(model => model.<#= fkname #> ) = "@Html.IdFor(model => model.<#= fkname #> )";
+			var @Html.IdFor(model => model.<#= fkobjeto #>.<#= fkdescricao #>) = "@Html.IdFor(model => model.<#= fkobjeto #>.<#= fkdescricao #>)";
+
+			var <#= ViewDataTypeShortName #>_<#= fkname #>  = {
+				isvalid: function () {
+
+					
+					$("#" + @Html.IdFor(model => model.<#= fkobjeto #>.<#= fkdescricao #>)).html('');
+
+					var id = $('#' + @Html.IdFor(model => model.<#= fkname #> )).val();
+					if (id != '' && id != '0'){
+						$.ajax({
+							type: 'GET',
+							url: '@Url.Action(actionName: "Find", controllerName: "<#= fktype #>")',
+							data: { "id": id },
+							success: function (data) {
+								$("#" + @Html.IdFor(model => model.<#= fkobjeto #>.<#= fkdescricao #>)).html(data.<#= fkdescricao #>);
+							},
+							error: function (xhr, ajaxOptions, thrownError) {
+							}
+
+						});
+					}
+				}
+			};
+			<#
+				blur_foreign_keys += (!String.IsNullOrEmpty(blur_foreign_keys)? ", ": "") + 
+				"{\n" +
+				"blur: [\"#\" + \"@Html.IdFor(model => model." + fkname +" )\"],\n" +
+				"funcao: function(){\n" +
+					ViewDataTypeShortName + "_" + fkname + ".isvalid();\n" +
+				"}\n" +
+				"}";
+			} #>
+				
+		fs.preparaListener([
+        <#=blur_foreign_keys#>
+		]);
+	</script>
+}
+<#
+}
+#>
+<#
+else if(IsLayoutPageSelected && ReferenceScriptLibraries) {
+#>
+
+<script src="~/Scripts/jquery-<#= JQueryVersion #>.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<#
+}
+#>
+<#
+// The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
+#>
+<#
+if(!IsPartialView && !IsLayoutPageSelected) {
+    ClearIndent();
+#>
+</body>
+</html>
+<#
+}
+#>
+<#@ include file="ModelMetadataFunctions.cs.include.t4" #>

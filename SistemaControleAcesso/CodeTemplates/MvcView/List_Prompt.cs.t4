@@ -1,0 +1,175 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ output extension=".cshtml" #>
+<#@ include file="Imports.include.t4" #>
+@model IEnumerable<#= "<" + ViewDataTypeName + ">" #>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="lista_<#= ViewDataTypeShortName #>">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><#= ViewDataTypeShortName #></h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Pesquisar</div>
+                    <div class="panel-body">
+                        
+<#
+IEnumerable<PropertyMetadata> properties = ModelMetadata.Properties;
+foreach (PropertyMetadata property in properties) {
+    if (property.Scaffold && !property.IsForeignKey) {
+#>
+<#
+        // We do not want to show any association properties for which there is
+        // no associated foreign key.
+        if (property.IsAssociation && GetRelatedModelMetadata(property) == null) {
+            continue;
+        }
+#>
+						<div class="row">
+							<div class="form-group col-sm-12">
+                                <label for="lis_<#= ViewDataTypeShortName #>_<#= GetValueExpression(property) #>" class="control-label"><#= GetValueExpression(property) #></label>
+                                <input type="text" name="lis_<#= ViewDataTypeShortName #>_<#= GetValueExpression(property) #>" id="lis_<#= ViewDataTypeShortName #>_<#= GetValueExpression(property) #>" class="form-control"/>
+                            </div>
+						</div>
+<#
+    }
+}
+#>
+                        <div class="row">
+                            <div class="form-group col-sm-4">
+                                <label class="control-label">&nbsp;</label>
+                                <button type="button" name="pesquisar" id="pesquisar" class="btn btn-default form-control" onclick="Lista_<#= ViewDataTypeShortName #>.pesquisar()">Pesquisar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                <div id="divTable<#= ViewDataTypeShortName #>">
+				<!-- Criar uma partial view tipada com o fonte abaixo, para que no pesquisar ele faca o load -->
+
+					<table class="table table-bordered table-striped">
+
+						<tr>
+							<th></th>
+<#
+foreach (PropertyMetadata property in properties) {
+    if (property.Scaffold && !property.IsForeignKey) {
+#>
+<#
+        // We do not want to show any association properties for which there is
+        // no associated foreign key.
+        if (property.IsAssociation && GetRelatedModelMetadata(property) == null) {
+            continue;
+        }
+#>
+							<th>
+								@Html.DisplayNameFor(model => model.<#= GetValueExpression(property) #>)
+							</th>
+<#
+    }
+}
+#>
+						</tr>
+
+@foreach (var item in Model) {
+						<tr>
+<#
+	string pkName = GetPrimaryKeyName();
+	if (pkName != null) {
+	#>
+							<td>
+								<button  type="button" class="btn btn-primary" onclick="Lista_<#= ViewDataTypeShortName #>.selecionar(@Html.DisplayFor(modelItem => item.<#= pkName #>))"><i class="glyphicon glyphicon-ok"></i></button>
+							</td>
+	<#
+	} else {
+	#>
+							<td>
+								<button  type="button" class="btn btn-primary" onclick="Lista_<#= ViewDataTypeShortName #>.selecionar(@Html.DisplayFor(/* id=item.PrimaryKey */))"><i class="glyphicon glyphicon-ok"></i></button>
+							</td>
+	<#
+	}
+	#>
+<#
+foreach (PropertyMetadata property in properties) {
+    if (property.Scaffold && !property.IsForeignKey) {
+#>
+<#
+        // We do not want to show any association properties for which there is
+        // no associated foreign key.
+        if (property.IsAssociation && GetRelatedModelMetadata(property) == null) {
+            continue;
+        }
+#>
+							<td>
+								@Html.DisplayFor(modelItem => <#= "item." + GetValueExpression(property) #>)
+							</td>
+<#
+    }
+}
+#>
+						</tr>
+}
+					</table>
+					<!-- Criar uma partial view tipada com o fonte acima, para que no pesquisar ele faca o load -->
+				</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-ok-circle"></i> Fechar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+    var Lista_<#= ViewDataTypeShortName #> = {
+        abrir: function () {
+            $('#lista_<#= ViewDataTypeShortName #>').modal("show");
+        },
+			
+        selecionar(id) {
+			this.fechar();
+<#		
+		if (pkName != null) {
+#>
+            $('#<#= ViewDataTypeShortName #>_<#= pkName#>').val(id);
+            $('#<#= ViewDataTypeShortName #>_<#= pkName#>').focus();
+<#		
+		}else{
+#>
+			$('#<#= ViewDataTypeShortName #>_/* id=item.PrimaryKey */').val(id);
+            $('#<#= ViewDataTypeShortName #>_/* id=item.PrimaryKey */').focus();
+<#		
+		}
+#>
+        },
+        fechar: function () {
+            $('#lista_<#= ViewDataTypeShortName #>').modal("hide");
+        },
+        pesquisar: function () {
+<#
+string parametros = "";
+foreach (PropertyMetadata property in properties) {
+    if (property.Scaffold && !property.IsForeignKey) {
+#>
+<#
+        // We do not want to show any association properties for which there is
+        // no associated foreign key.
+        if (property.IsAssociation && GetRelatedModelMetadata(property) == null) {
+            continue;
+        }
+		parametros += (parametros == "" ? "?" : "+\"&") + ViewDataTypeShortName + "_" + GetValueExpression(property) + "=\" + " + ViewDataTypeShortName + "_" + GetValueExpression(property);
+#>
+			var <#= ViewDataTypeShortName #>_<#= GetValueExpression(property) #> = $('#lis_<#= ViewDataTypeShortName #>_<#= GetValueExpression(property) #>').val()
+<#
+    }
+}
+#>
+            $('#divTable<#= ViewDataTypeShortName #>').load("@Url.Action(actionName: "Index", controllerName: "<#= ViewDataTypeShortName #>")<#= parametros#>);
+
+        }
+
+    };
+</script>
+
+<#@ include file="ModelMetadataFunctions.cs.include.t4" #>

@@ -1,0 +1,25 @@
+﻿@using SistemaControleAcesso.Models
+@if (Session[Dominios.usuario_sessao] != null){ 
+            <!-- Menu Toggle Button -->
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">                
+                <span class="hidden-xs" style="display:inline !important;">@(((Usuario)Session[Dominios.usuario_sessao]).nome.Split(' ')[0])</span>
+            </a>
+            <ul class="dropdown-menu">
+                
+                    <li class="user-body">
+                        <p class="text-center">
+                            @(((Usuario)Session[Dominios.usuario_sessao]).nome)
+                        </p>
+                    </li>
+                    <li class="user-footer">
+                        <div class="pull-left">
+                            <a href="@Url.Action("EditUsuario","Usuario", new { email = ((Usuario)Session[Dominios.usuario_sessao]).email})" class="btn btn-primary">Perfil</a>
+                        </div>
+                        <div class="pull-right">
+                            <a href="@Url.Action("Logout","Usuario")" class="btn btn-primary">Sair</a>
+                        </div>
+                    </li>
+            </ul>
+}
+            
+        

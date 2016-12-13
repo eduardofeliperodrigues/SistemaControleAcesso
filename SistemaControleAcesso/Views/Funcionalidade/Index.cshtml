@@ -1,0 +1,118 @@
+﻿@model IEnumerable<SistemaControleAcesso.Models.Funcionalidade>
+
+@{
+    ViewBag.Title = "Funcionalidades";
+}
+<div class="overlay" id="loading" style="display:none;">
+</div>
+<div class="alert alert-danger" role="alert" id="alert_mensagem" style="display:none;">
+    <span id="mensagem"></span>
+    <button type="button" class="close" onclick="$('#alert_mensagem').hide();" aria-label="Fechar">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+
+<table class="table table-bordered table-striped">
+
+    <tr>
+        <th style="width:250px;"><a class="btn btn-primary @(!ViewBag.inserir? "disabled" : "")" href="@Url.Action(actionName:"Create")"><i class="glyphicon glyphicon-file"></i></a></th>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.link)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <a class="btn btn-primary @(!ViewBag.atualizar? "disabled" : "")" href="@Url.Action(actionName:"Edit", routeValues: new { id = item.id})"><i class="glyphicon glyphicon-pencil"></i></a>
+                <a class="btn btn-success @(!ViewBag.consultar? "disabled" : "")" href="@Url.Action(actionName:"Details",routeValues: new { id = item.id})"><i class="glyphicon glyphicon-eye-open"></i></a>
+                <a class="btn btn-danger @(!ViewBag.excluir? "disabled" : "")" href="@Url.Action(actionName:"Delete",routeValues: new { id = item.id})"><i class="glyphicon glyphicon-trash"></i></a>
+                <button class="btn btn-default @(!ViewBag.ToUp? "disabled": "")" onclick="Funcionalidade_lista.toUp(@Html.DisplayFor(modelItem => item.id))"><i class="glyphicon glyphicon-arrow-up"></i></button>
+                <button class="btn btn-default @(!ViewBag.ToDown? "disabled": "")" onclick="Funcionalidade_lista.toDown(@Html.DisplayFor(modelItem => item.id))"><i class="glyphicon glyphicon-arrow-down"></i></button>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td style="padding-left:@(item.nivel*10)px">
+                @Html.DisplayFor(modelItem => item.nome)
+            </td>
+            <td>
+                <a href="@item.link">@Html.DisplayFor(modelItem => item.link)</a>
+            </td>
+        </tr>
+    }
+
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+        var Funcionalidade_lista = {
+            toUp: function (id) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action(actionName: "ToUp", controllerName: "Funcionalidade")',
+                    data: { "id": id },
+                    beforeSend: function (xhr) {
+                        $("#loading").fadeIn();
+                        $("#alert_mensagem").hide();
+                    },
+                    success: function (data) {
+                        if (!data.hasOwnProperty("erro")) {
+                            $("#loading").fadeOut();
+                            location.reload();
+                        } else {
+                            $("#loading").hide();
+                            $("#mensagem").html(data.erro);
+                            $("#alert_mensagem").show();
+
+                        }
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $("#loading").fadeOut();
+                        $("#mensagem").html(xhr);
+                        $("#alert_mensagem").show();
+                    }
+
+                });
+            },
+            toDown: function (id) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action(actionName: "ToDown", controllerName: "Funcionalidade")',
+                    data: { "id": id },
+                    beforeSend: function (xhr) {
+                        $("#loading").fadeIn();
+                        $("#alert_mensagem").hide();
+                    },
+                    success: function (data) {
+                        if (!data.hasOwnProperty("erro")) {
+                            $("#loading").fadeOut();
+                            location.reload();
+                        } else {
+                            $("#loading").hide();
+                            $("#mensagem").html(data.erro);
+                            $("#alert_mensagem").show();
+
+                        }
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $("#loading").fadeOut();
+                        $("#mensagem").html(xhr);
+                        $("#alert_mensagem").show();
+                    }
+
+                });
+            }
+        };
+
+    </script>
+}

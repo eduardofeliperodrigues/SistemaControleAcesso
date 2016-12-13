@@ -1,0 +1,35 @@
+﻿@model IEnumerable<SistemaControleAcesso.Models.Usuario>
+
+<table class="table table-bordered table-striped">
+
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.cidade_id)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <button type="button" class="btn btn-primary" onclick="Lista_Usuario.selecionar(@Html.DisplayFor(modelItem => item.id))"><i class="glyphicon glyphicon-ok"></i></button>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cidade.nome)
+            </td>
+        </tr>
+    }
+</table>
